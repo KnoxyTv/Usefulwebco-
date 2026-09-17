@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07100b">
+<title>WARDOGS Quick Fire</title>
+<style>
+:root{--bg:#060a08;--panel:#0b130f;--line:#263a30;--text:#edf6f0;--muted:#8da095;--green:#8cf3b4;--green2:#35cb79;--amber:#ffd36f;--red:#ff7c7c}
+*{box-sizing:border-box}html{color-scheme:dark}body{margin:0;min-height:100vh;background:linear-gradient(180deg,#09110d,#050806 60%);color:var(--text);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}.app{width:min(820px,100%);margin:auto;padding:max(14px,env(safe-area-inset-top)) 12px max(30px,env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 12px}.title{font-size:18px;font-weight:900;letter-spacing:.01em}.sub{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.1em}
+.weapon{display:grid;grid-template-columns:1fr 1fr;gap:7px}.weapon button,.mini,.corr button{border:1px solid var(--line);background:#09110d;color:#aebfb5;border-radius:10px}.weapon button{padding:10px 12px;font-weight:800}.weapon button.active{border-color:#4d9c6f;background:rgba(53,203,121,.12);color:#edfff4}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.coord{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:11px}.coord-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.coord-head b{font-size:11px;letter-spacing:.1em}.coord-head span{font-size:9px;color:var(--muted)}
+.coord input{width:100%;border:1px solid #32483c;background:#050a07;color:white;border-radius:10px;padding:13px 11px;font-size:16px;font-weight:700;outline:none}.coord input:focus{border-color:#55b17d;box-shadow:0 0 0 3px rgba(53,203,121,.09)}.coord input.bad{border-color:#8c4949}.coord-actions{display:flex;gap:6px;margin-top:7px}.mini{padding:7px 9px;font-size:10px;cursor:pointer}.mini.primary{border-color:#4c9d6d;color:#dff9e9}.hint{font-size:10px;color:var(--muted);margin:8px 2px 0;text-align:center}
+.solution{margin-top:10px;border:1px solid #315040;background:linear-gradient(180deg,#0d1912,#09110d);border-radius:16px;padding:14px}.solution.out{border-color:#633f3f}.status{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.status strong{font-size:11px;letter-spacing:.12em}.status .range{font-size:10px;color:var(--muted)}
+.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.metric{background:#060c09;border:1px solid #273b31;border-radius:12px;padding:11px;text-align:center}.k{font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}.v{font-size:clamp(25px,8vw,42px);font-weight:950;line-height:1;margin-top:6px;white-space:nowrap}.metric.mil .v{color:var(--green)}.s{font-size:9px;color:var(--muted);margin-top:5px;min-height:11px}.secondary{display:none;margin-top:8px;border:1px solid #30483c;background:#09120e;border-radius:10px;padding:8px 10px;font-size:11px;color:#bed0c5}.secondary.show{display:flex;justify-content:space-between;gap:8px}.secondary b{color:#fff}
+.quickline{margin-top:9px;background:#101e16;border-left:3px solid var(--green2);border-radius:9px;padding:10px 11px;font-size:13px;font-weight:700;line-height:1.35}.quickline.out{border-left-color:var(--red);color:#ffd1d1}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.buttons button{border:1px solid #335342;background:#0b1710;color:#dcebe2;border-radius:11px;padding:11px;font-weight:800;cursor:pointer}.buttons .copy{background:linear-gradient(180deg,#3bd27e,#29aa65);border-color:#5ee397;color:#041009}
+.corrections{margin-top:10px;border-top:1px solid #203329;padding-top:10px}.corr-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.corr-top span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}.corr-step{display:flex;align-items:center;gap:5px}.corr-step input{width:62px;border:1px solid #30483c;background:#050a07;color:#fff;border-radius:8px;padding:6px 7px;font-size:11px}.corr{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.corr button{padding:9px 4px;font-size:10px;font-weight:800;cursor:pointer}.delta{min-height:16px;margin-top:7px;color:#9eb2a7;font-size:10px;text-align:center}
+.footer{text-align:center;color:#61756a;font-size:9px;margin-top:12px;line-height:1.4}
+.toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);background:#15271d;border:1px solid #3f7658;color:#eafff2;border-radius:999px;padding:9px 13px;font-size:11px;opacity:0;pointer-events:none;transition:.16s}.toast.show{opacity:1}
+@media(max-width:520px){.app{padding-left:8px;padding-right:8px}.top{align-items:flex-end}.title{font-size:16px}.weapon button{padding:9px 10px;font-size:12px}.input-row{gap:6px}.coord{padding:8px}.coord input{padding:12px 8px;font-size:14px}.coord-head span{display:none}.coord-actions{gap:4px}.mini{padding:6px 7px}.solution{padding:10px}.metrics{gap:5px}.metric{padding:10px 5px}.v{font-size:clamp(24px,9vw,36px)}.quickline{font-size:12px}.corr{gap:5px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="top">
+    <div><div class="title">WARDOGS Quick Fire</div><div class="sub">coords in → solution out</div></div>
+    <div class="weapon" aria-label="Weapon">
+      <button id="mortarBtn" class="active">L81</button>
+      <button id="sphBtn">SPH-2</button>
+    </div>
+  </div>
+
+  <section class="input-row">
+    <div class="coord">
+      <div class="coord-head"><b>GUN</b><span>saved automatically</span></div>
+      <input id="gun" inputmode="decimal" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="83.64, 72.85">
+      <div class="coord-actions">
+        <button id="pasteGun" class="mini primary">PASTE</button>
+        <button id="clearGun" class="mini">CLEAR</button>
+      </div>
+    </div>
+    <div class="coord">
+      <div class="coord-head"><b>TARGET</b><span>replace for each shot</span></div>
+      <input id="target" inputmode="decimal" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="88.10, 75.92">
+      <div class="coord-actions">
+        <button id="pasteTarget" class="mini primary">PASTE</button>
+        <button id="clearTarget" class="mini">CLEAR</button>
+      </div>
+    </div>
+  </section>
+  <div class="hint">Paste almost any format: <b>83.64 72.85</b> · <b>83.64,72.85</b> · <b>x83.64 y72.85</b></div>
+
+  <section id="solution" class="solution">
+    <div class="status"><strong id="statusText">ENTER COORDS</strong><span id="weaponRange" class="range">L81 · 132–684 m</span></div>
+    <div class="metrics">
+      <div class="metric"><div class="k">AZ</div><div id="az" class="v">—</div><div id="dir" class="s">bearing</div></div>
+      <div class="metric mil"><div class="k">MIL</div><div id="mil" class="v">—</div><div id="arc" class="s">sight</div></div>
+      <div class="metric"><div class="k">RANGE</div><div id="range" class="v">—</div><div class="s">meters</div></div>
+    </div>
+    <div id="secondary" class="secondary"></div>
+    <div id="quickline" class="quickline">Enter Gun and Target coordinates.</div>
+    <div class="buttons">
+      <button id="swap">SWAP G ↔ T</button>
+      <button id="copy" class="copy">COPY SOLUTION</button>
+    </div>
+    <div class="corrections">
+      <div class="corr-top"><span>Impact correction</span><div class="corr-step"><input id="step" type="number" value="50" min="1" step="5"><span style="font-size:10px;color:var(--muted)">m</span></div></div>
+      <div class="corr">
+        <button data-c="short">SHORT</button><button data-c="long">LONG</button><button data-c="left">LEFT</button><button data-c="right">RIGHT</button>
+      </div>
+      <div id="delta" class="delta"></div>
+    </div>
+  </section>
+
+  <div class="footer">Unofficial WARDOGS companion. Community firing-table data can change after game updates.</div>
+</main>
+<div id="toast" class="toast">Copied</div>
+<script>
+(()=>{
+const M=100;
+const WEAPONS={mortar:{name:'L81',min:132,max:684},sph:{name:'SPH-2',min:780,max:2629}};
+const mortarRanges=[132,140,151,163,175,187,198,208,219,229,239,250,260,270,280,290,300,310,319,329,339,348,358,367,376,385,394,403,412,420,429,437,446,454,462,470,478,486,494,501,509,516,524,531,538,545,552,559,565,572,578,585,591,597,603,609,615,620,626,631,636,641,646,651,656,661,666,670,675,680,684];
+const mortarTable=mortarRanges.map((range,i)=>({range,mil:850-i*10}));
+const sphLowRanges=[1181,1232,1283,1334,1384,1433,1482,1529,1576,1622,1666,1709,1751,1792,1832,1870,1907,1944,1979,2014,2046,2079,2110,2139,2168,2196,2223,2249,2273,2296,2319,2341,2362,2383,2403,2422,2439,2456,2471,2485,2499,2513,2526,2538,2550,2561,2570,2579,2586,2593,2599,2605,2610,2615,2620,2623,2626,2628,2629];
+const sphLowTable=sphLowRanges.map((range,i)=>({range,mil:20+i*10}));
+const sphHighRanges=[2629,2629,2628,2626,2624,2621,2617,2613,2609,2604,2599,2592,2584,2576,2567,2557,2546,2536,2524,2513,2501,2488,2474,2460,2444,2429,2412,2395,2378,2360,2342,2323,2303,2282,2261,2239,2217,2194,2171,2147,2123,2098,2072,2046,2019,1991,1963,1934,1905,1875,1844,1813,1782,1750,1717,1684,1650,1616,1582,1547,1512,1475,1438,1401,1363,1324,1285,1245,1205,1165,1124,1083,1041,999,956,913,869,825,780];
+const sphHighTable=sphHighRanges.map((range,i)=>({range,mil:610+i*10}));
+const $=id=>document.getElementById(id);let weapon=localStorage.getItem('wqf-weapon')||'mortar';
+function parseCoord(v){if(!v)return null;const nums=String(v).replace(/[−–—]/g,'-').match(/-?\d+(?:\.\d+)?/g);if(!nums||nums.length<2)return null;const x=Number(nums[0]),y=Number(nums[1]);return Number.isFinite(x)&&Number.isFinite(y)?{x,y}:null}
+function clean(p){return p?`${trim(p.x)}, ${trim(p.y)}`:''}function trim(n){return Number(n.toFixed(4)).toString()}
+function interp(table,d){const a=[...table].sort((x,y)=>x.range-y.range);if(d<a[0].range||d>a[a.length-1].range)return null;for(let i=0;i<a.length-1;i++){const p=a[i],q=a[i+1];if(d>=p.range&&d<=q.range){if(q.range===p.range)return(p.mil+q.mil)/2;return p.mil+(d-p.range)/(q.range-p.range)*(q.mil-p.mil)}}return a[a.length-1].mil}
+function sols(d){if(weapon==='mortar'){const m=interp(mortarTable,d);return m==null?[]:[{label:'HIGH',mil:m}]}const out=[],lo=interp(sphLowTable,d),hi=interp(sphHighTable,d);if(lo!=null)out.push({label:'LOW',mil:lo});if(hi!=null)out.push({label:'HIGH',mil:hi});return out}
+function dir16(d){const a=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];return a[Math.round(d/22.5)%16]}function deg(d){return String(Math.round(d)).padStart(3,'0')+'°'}
+function state(){const g=parseCoord($('gun').value),t=parseCoord($('target').value);$('gun').classList.toggle('bad',$('gun').value.trim()&&!g);$('target').classList.toggle('bad',$('target').value.trim()&&!t);if(!g||!t)return null;const dx=(t.x-g.x)*M,dy=(t.y-g.y)*M,d=Math.hypot(dx,dy),az=(Math.atan2(dx,dy)*180/Math.PI+360)%360,cfg=WEAPONS[weapon],ss=sols(d);return{g,t,dx,dy,d,az,cfg,ss,inRange:d>=cfg.min&&d<=cfg.max}}
+function primary(s){if(!s||!s.ss.length)return null;if(weapon==='sph')return s.ss.find(x=>x.label==='LOW')||s.ss[0];return s.ss[0]}
+function render(){const s=state(),cfg=WEAPONS[weapon];$('mortarBtn').classList.toggle('active',weapon==='mortar');$('sphBtn').classList.toggle('active',weapon==='sph');$('weaponRange').textContent=`${cfg.name} · ${cfg.min}–${cfg.max} m`;if(!s){$('statusText').textContent='ENTER COORDS';$('solution').classList.remove('out');$('az').textContent=$('mil').textContent=$('range').textContent='—';$('dir').textContent='bearing';$('arc').textContent='sight';$('secondary').className='secondary';$('quickline').className='quickline';$('quickline').textContent='Enter Gun and Target coordinates.';return}localStorage.setItem('wqf-gun',clean(s.g));localStorage.setItem('wqf-target',clean(s.t));const p=primary(s);$('az').textContent=deg(s.az);$('dir').textContent=dir16(s.az);$('mil').textContent=p?Math.round(p.mil):'—';$('arc').textContent=p?`${p.label} ARC`:'NO SOLUTION';$('range').textContent=Math.round(s.d);$('statusText').textContent=s.inRange?'IN RANGE':'OUT OF RANGE';$('solution').classList.toggle('out',!s.inRange);const other=s.ss.filter(x=>x!==p);if(other.length){$('secondary').className='secondary show';$('secondary').innerHTML=`<span>Other arc</span><b>${other.map(x=>`${x.label} ${Math.round(x.mil)} MIL`).join(' · ')}</b>`}else $('secondary').className='secondary';if(s.inRange&&p){$('quickline').className='quickline';$('quickline').textContent=`${deg(s.az)} · ${Math.round(p.mil)} MIL · ${Math.round(s.d)} M`;}else{$('quickline').className='quickline out';$('quickline').textContent=`OUT OF RANGE · ${Math.round(s.d)} M · ${cfg.name} ${cfg.min}–${cfg.max} M`;}}
+function setWeapon(w){weapon=w;localStorage.setItem('wqf-weapon',w);render()}
+function copySolution(){const s=state(),p=primary(s);if(!s||!p)return toast('No valid solution');copy(`${WEAPONS[weapon].name} | AZ ${deg(s.az)} | ${Math.round(p.mil)} MIL ${p.label} | ${Math.round(s.d)}m | G ${clean(s.g)} → T ${clean(s.t)}`)}
+function copy(t){if(navigator.clipboard?.writeText)navigator.clipboard.writeText(t).then(()=>toast('Copied')).catch(()=>prompt('Copy:',t));else prompt('Copy:',t)}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),900)}
+async function pasteInto(id){try{const t=await navigator.clipboard.readText();if(t){$(id).value=t;render();$(id).focus();$(id).select()}}catch{$(id).focus();toast('Paste into the field')}}
+function correct(kind){const s=state();if(!s||!s.d)return;const step=Math.max(1,Number($('step').value)||50),ux=s.dx/s.d,uy=s.dy/s.d;let mx=0,my=0;if(kind==='long'){mx=ux*step;my=uy*step}if(kind==='short'){mx=-ux*step;my=-uy*step}if(kind==='left'){mx=-uy*step;my=ux*step}if(kind==='right'){mx=uy*step;my=-ux*step}const before=primary(s),oldAz=s.az,next={x:s.t.x+mx/M,y:s.t.y+my/M};$('target').value=clean(next);render();const ns=state(),after=primary(ns);if(ns&&before&&after){const da=((ns.az-oldAz+540)%360)-180,dm=after.mil-before.mil;$('delta').textContent=`${kind.toUpperCase()} ${step}m → AZ ${deg(ns.az)} (${da>=0?'+':''}${da.toFixed(1)}°) · MIL ${Math.round(after.mil)} (${dm>=0?'+':''}${Math.round(dm)})`}}
+$('mortarBtn').onclick=()=>setWeapon('mortar');$('sphBtn').onclick=()=>setWeapon('sph');$('pasteGun').onclick=()=>pasteInto('gun');$('pasteTarget').onclick=()=>pasteInto('target');$('clearGun').onclick=()=>{$('gun').value='';render();$('gun').focus()};$('clearTarget').onclick=()=>{$('target').value='';render();$('target').focus()};$('swap').onclick=()=>{const a=$('gun').value;$('gun').value=$('target').value;$('target').value=a;render()};$('copy').onclick=copySolution;document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>correct(b.dataset.c));['gun','target'].forEach(id=>{$(id).addEventListener('input',render);$(id).addEventListener('blur',()=>{const p=parseCoord($(id).value);if(p)$(id).value=clean(p);render()})});$('gun').addEventListener('keydown',e=>{if(e.key==='Enter'){const p=parseCoord($('gun').value);if(p)$('gun').value=clean(p);render();$('target').focus();$('target').select()}});$('target').addEventListener('keydown',e=>{if(e.key==='Enter'){const p=parseCoord($('target').value);if(p)$('target').value=clean(p);render();$('target').select()}});
+$('gun').value=localStorage.getItem('wqf-gun')||'83.64, 72.85';$('target').value=localStorage.getItem('wqf-target')||'88.10, 75.92';setWeapon(weapon);setTimeout(()=>{$('target').focus();$('target').select()},120);
+})();
+</script>
+</body>
+</html>
